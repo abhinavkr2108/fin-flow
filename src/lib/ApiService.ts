@@ -181,7 +181,7 @@ class CryptoApiService {
     const volumeRatio = volume / marketCap;
     const volatilityPenalty = Math.abs(priceChange) / 100;
 
-    let liquidityScore = Math.min(volumeRatio * 10, 1) - volatilityPenalty;
+    const liquidityScore = Math.min(volumeRatio * 10, 1) - volatilityPenalty;
     return Math.max(0, Math.min(1, liquidityScore));
   }
 
