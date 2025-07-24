@@ -6,7 +6,6 @@ import CalendarCell from "./calendar-cell";
 
 type Navigate = "prev" | "next";
 export default function CalendarBody() {
-  const today = new Date();
   const monthNames = [
     "January",
     "February",
@@ -42,24 +41,19 @@ export default function CalendarBody() {
         <h3 className="text-xl font-bold text-slate-800">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigateMonth("prev")}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+            className="p-2 cursor-pointer bg-violet-100 hover:bg-violet-200 hover:text-white font-bold rounded-sm transition-colors duration-200"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-600" />
+            <ChevronLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <button
-            onClick={() => setCurrentDate(new Date())}
-            className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-          >
-            Today
-          </button>
+
           <button
             onClick={() => navigateMonth("next")}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+            className="p-2 cursor-pointer bg-violet-100 hover:bg-violet-200 hover:text-white font-bold rounded-sm transition-colors duration-200"
           >
-            <ChevronRight className="w-5 h-5 text-slate-600" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
       </div>

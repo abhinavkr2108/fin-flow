@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { Calendar } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import React from "react";
 import SelectOption from "./select-option";
 
@@ -10,7 +10,7 @@ export default function Header() {
       <div className="flex flex-col gap-1 p-5 md:p-0 md:flex-row justify-between items-center h-full max-w-6xl mx-auto">
         <div className="flex items-center gap-4">
           <Button>
-            <Calendar className="h-4 w-4" />
+            <DollarSign className="h-4 w-4" />
           </Button>
           <div className="flex flex-col gap-0">
             <h1 className="text-xl font-bold">FinFlow</h1>
