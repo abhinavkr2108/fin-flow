@@ -2,7 +2,7 @@
 
 import { ProcessedCryptoData } from "@/lib/types/market";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface CalendarCellProps {
   currentDate: Date;
