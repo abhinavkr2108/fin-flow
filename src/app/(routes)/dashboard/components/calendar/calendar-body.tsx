@@ -1,78 +1,96 @@
 "use client";
+
+type CalendarView = "daily" | "weekly" | "monthly";
 import { CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useState } from "react";
+import { useProcessedCryptoData } from "@/lib/ApiService";
+import { useMemo, useState } from "react";
 import CalendarCell from "./calendar-cell";
+import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCryptoStore } from "@/store";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type Navigate = "prev" | "next";
 export default function CalendarBody() {
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+  const { selectedCrypto } = useCryptoStore();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [view, setView] = useState<CalendarView>("daily");
 
-  const navigateMonth = (navigate: Navigate) => {
+  const {
+    data: cryptoData,
+    isLoading,
+    isError,
+  } = useProcessedCryptoData(selectedCrypto, 90);
+
+  if (isLoading) {
+    return (
+      <CardContent>
+        <div className="grid grid-cols-7 gap-1">
+          {/* Skeleton Weekday Headers */}
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, idx) => (
+            <Skeleton
+              key={idx}
+              className="text-center text-sm font-semibold h-8 bg-muted"
+            >
+              &nbsp;{/* Invisible placeholder for header width */}
+            </Skeleton>
+          ))}
+
+          {/* Skeleton Date Cells: 6 Weeks x 7 Days = 42 Cells */}
+          {Array.from({ length: 42 }, (_, idx) => (
+            <div className="h-20" key={`skeleton-date-${idx}`}>
+              <Skeleton className="w-full aspect-square p-2 rounded-lg bg-muted" />
+              <div className="flex items-center gap-2">
+                <LoaderCircle className="h-4 w-4 text-muted-foreground animate-spin" />
+                <p>Loading....</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    );
+  }
+  if (isError) {
+    return toast.error("Failed to load data");
+  }
+
+  const handleNavigation = (type: "prev" | "next") => {
     const newDate = new Date(currentDate);
-    if (navigate === "prev") {
-      newDate.setMonth(newDate.getMonth() - 1);
-    } else {
-      newDate.setMonth(newDate.getMonth() + 1);
-    }
+    type === "prev"
+      ? newDate.setMonth(newDate.getMonth() - 1)
+      : newDate.setMonth(newDate.getMonth() + 1);
     setCurrentDate(newDate);
   };
 
   return (
     <CardContent>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-slate-800">
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold">
+          {currentDate.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          })}
         </h3>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigateMonth("prev")}
-            className="p-2 cursor-pointer bg-violet-100 hover:bg-violet-200 hover:text-white font-bold rounded-sm transition-colors duration-200"
+        <div className="flex gap-2">
+          <Button
+            className="h-8 w-8 cursor-pointer bg-violet-200 hover:bg-violet-300 text-muted-foreground"
+            onClick={() => handleNavigation("prev")}
           >
-            <ChevronLeft className="w-5 h-5 text-muted-foreground" />
-          </button>
-
-          <button
-            onClick={() => navigateMonth("next")}
-            className="p-2 cursor-pointer bg-violet-100 hover:bg-violet-200 hover:text-white font-bold rounded-sm transition-colors duration-200"
+            <ChevronLeft />
+          </Button>
+          <Button
+            className="h-8 w-8 cursor-pointer bg-violet-200 hover:bg-violet-300 text-muted-foreground"
+            onClick={() => handleNavigation("next")}
           >
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
+            <ChevronRight />
+          </Button>
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {/* Day Headers */}
-        {dayNames.map((day, idx) => (
-          <div
-            key={idx}
-            className="p-4 text-center text-sm font-medium text-slate-500"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-
-      {/* Calendar Days */}
-      <CalendarCell currentDate={currentDate} />
+      <CalendarCell
+        currentDate={currentDate}
+        processedData={cryptoData || {}}
+      />
     </CardContent>
   );
 }
